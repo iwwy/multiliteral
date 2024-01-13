@@ -1,0 +1,247 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Multiliteral Sings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+<style>
+    body {text-align: center; font-size: 250%;}
+    .flip {transform: scaleX(-1);}
+    .egyptian {font-family: 'Noto Sans Egyptian Hieroglyphs', sans-serif;}
+    #keys {font-family: monospace;}
+    #keys span {background-color:lightgrey;padding:1rem 2rem;cursor:pointer;}
+    #back,#space,#check,#next {cursor: pointer;}
+    #space,#check {margin: 0 2rem;}
+    #question {font-size: 200%;}
+    #solution {margin-bottom: 2rem;}
+    @media only screen and (max-width: 980px) {
+        body {font-size: 7vw;}
+        div {margin: 2rem;}
+        .egyptian {font-size: 30vw;}
+        #keys {font-size: 6vw;}
+    }
+</style></head>
+<body>
+    <a class="github-fork-ribbon" href="https://github.com/iwwy/multiliteral"
+      data-ribbon="Fork me on GitHub"
+      title="Fork me on GitHub">Fork me on GitHub</a>
+    <div><hr /><span id="count"> </span></div>
+    <div><span class="egyptian flip" id="question"> </span></div>
+    <div id="solution"> </div>
+    <div id="keys">
+        <span>q</span> <span>w</span> <span>r</span>
+        <span>t</span> <span>y</span> <span>p</span>
+        <hr />
+        <span>š</span> <span>Ꜣ</span> <span>ꜥ</span> <span>ḏ</span>
+        <span>ṯ</span> <span>h</span> <span>ḥ</span>
+        <hr />
+        <span>s</span> <span>d</span> <span>f</span>
+        <span>g</span> <span>j</span> <span>k</span>
+        <hr />
+        <span>z</span> <span>ḫ</span> <span>ẖ</span>
+        <span>b</span> <span>n</span> <span>m</span>
+    </div>
+    <hr />
+    <div>
+        <span id="back">❌</span>
+        <span id="space">␣</span>
+        <span id="check">✅</span>
+        <span id="next">🔁</span>
+    </div>
+    <hr />
+    <div id="answer">
+    </div>
+</body>
+<script>
+const pairs = shuffle([
+ ["\ud80c\udc14", ["nnj"]], ["\ud80c\udc17", ["jk"]], ["\ud80c\udc1f", ["jn"]],
+ ["\ud80c\udc39", ["jr"]], ["\ud80c\udc76", ["tp"]], ["\ud80c\udc77", ["\u1e25r"]],
+ ["\ud80c\udc79", ["jr"]], ["\ud80c\udc89", ["\u1e2bnt"]], ["\ud80c\udc93", ["k\ua722"]],
+ ["\ud80c\udc99", ["\u1e96n"]], ["\ud80c\udc9c", ["nj"]], ["\ud80c\udc9e", ["dj"]],
+ ["\ud80c\udc9f", ["mj"]], ["\ud80c\udca2", ["nj"]], ["\ud80c\udca4", ["\u1e2bw"]],
+ ["\ud80c\udcb8", ["mt"]], ["\ud80c\udcbb", ["jw"]], ["\ud80c\udcbe", ["pd"]],
+ ["\ud80c\udcd9", ["jb"]], ["\ud80c\udcdb", ["jw"]], ["\ud80c\udced", ["rw"]],
+ ["\ud80c\udcf9", ["wn"]], ["\ud80c\udd0a", ["wsr"]], ["\ud80c\udd0b", ["wp"]],
+ ["\ud80c\udd0f", ["\ua725b"]], ["\ud80c\udd11", ["\u1e25w", "b\u1e25"]],
+ ["\ud80c\udd13", ["ns"]], ["\ud80c\udd14", ["jdn", "s\u1e0fm"]],
+ ["\ud80c\udd16", ["p\u1e25"]], ["\ud80c\udd19", ["w\u1e25m"]],
+ ["\ud80c\udd1a", ["\u1e96n"]], ["\ud80c\udd1c", ["s\ua722b"]],
+ ["\ud80c\udd1d", ["st"]], ["\ud80c\udd1e", ["\u0161d"]], ["\ud80c\udd1f", ["ms"]],
+ ["\ud80c\udd23", ["jb"]], ["\ud80c\udd24", ["nfr"]], ["\ud80c\udd25", ["zm\ua722"]],
+ ["\ud80c\udd2b", ["\ua722w"]], ["\ud80c\udd2d", ["spr"]], ["\ud80c\udd2f", ["jsw"]],
+ ["\ud80c\udd39", ["js"]], ["\ud80c\udd42", ["tjw"]],
+ ["\ud80c\udd50", ["mwt", "mt", "mjt", "mjwt"]], ["\ud80c\udd58", ["n\u1e25"]],
+ ["\ud80c\udd59", ["\u1e0fb"]], ["\ud80c\udd5c", ["\ua722\u1e2b"]],
+ ["\ud80c\udd5f", ["d\u0161r"]], ["\ud80c\udd60", ["gm"]], ["\ud80c\udd61", ["b\ua722"]],
+ ["\ud80c\udd67", ["\ua725q"]], ["\ud80c\udd68", ["wr"]], ["\ud80c\udd6c", ["gb"]],
+ ["\ud80c\udd6d", ["z\ua722"]], ["\ud80c\udd6e", ["p\ua722"]], ["\ud80c\udd6f", ["p\ua722"]],
+ ["\ud80c\udd77", ["\u1e6f\ua722"]], ["\ud80c\udd7e", ["sn\u1e0f"]],
+ ["\ud80c\udd80", ["p\ua722q"]], ["\ud80c\udd81", ["p\ua722q"]],
+ ["\ud80c\udd84", ["\u0161w"]], ["\ud80c\udd88", ["\ua725\u0161\ua722"]],
+ ["\ud80c\udd8e", ["km"]], ["\ud80c\udd9b", ["jn"]], ["\ud80c\udd9d", ["\ua725\u1e0f"]],
+ ["\ud80c\udd9e", ["\u1e96\ua722"]], ["\ud80c\udda3", ["\u1e2bpr"]],
+ ["\ud80c\udda9", ["\u1e2b\ua722"]], ["\ud80c\uddad", ["jm\ua722"]],
+ ["\ud80c\uddb0", ["\u1e25n"]], ["\ud80c\uddb1", ["\u1e2bt"]],
+ ["\ud80c\uddb7", ["\u0161\ua722"]], ["\ud80c\uddbc", ["\u1e2b\ua722"]],
+ ["\ud80c\uddc5", ["w\ua722\u1e0f"]], ["\ud80c\uddc7", ["\ua722\u1e2b"]],
+ ["\ud80c\uddc9", ["\u1e25\ua722"]], ["\ud80c\uddd1", ["n\u1e2bb"]],
+ ["\ud80c\uddd2", ["nn"]], ["\ud80c\uddd3", ["sw"]], ["\ud80c\uddd7", ["\u0161m\ua725"]],
+ ["\ud80c\udddb", ["n\u1e0fm"]], ["\ud80c\udde5", ["\u1e0fr"]], ["\ud80c\udde9", ["jz"]],
+ ["\ud80c\uddec", ["wn"]], ["\ud80c\uddf6", ["wbn"]], ["\ud80c\uddf7", ["ps\u1e0f"]],
+ ["\ud80c\uddf8", ["w\u1e0f\ua725"]], ["\ud80c\uddfc", ["sb\ua722", "dw\ua722"]],
+ ["\ud80c\uddfe", ["t\ua722"]], ["\ud80c\ude04", ["w\u1e0fb"]], ["\ud80c\ude0b", ["\u1e0fw"]],
+ ["\ud80c\ude0d", ["\u1e2b\ua725"]], ["\ud80c\ude10", ["\u1e25r"]], ["\ud80c\ude17", ["mw"]],
+ ["\ud80c\ude18", ["mr"]], ["\ud80c\ude1d", ["\u0161m"]], ["\ud80c\ude1e", ["\u1e25m"]],
+ ["\ud80c\ude50", ["pr"]], ["\ud80c\ude55", ["mr", "nm"]], ["\ud80c\ude7a", ["jwn"]],
+ ["\ud80c\ude7b", ["\ua725\ua722"]], ["\ud80c\ude8f", ["\u0161zp"]],
+ ["\ud80c\ude90", ["\u0161zp"]], ["\ud80c\ude97", ["zp"]], ["\ud80c\udea0", ["w\u1e25\ua725"]],
+ ["\ud80c\udea2", ["\ua725\u1e25\ua725"]], ["\ud80c\udea4", ["\u1e2brw"]],
+ ["\ud80c\udea8", ["js", "st", "\u1e25tm"]], ["\ud80c\udea9", ["js"]],
+ ["\ud80c\udeb5", ["\u1e25tp"]], ["\ud80c\udeb6", ["kp", "k\ua722p"]],
+ ["\ud80c\udeb8", ["b\ua722"]], ["\ud80c\udeb9", ["n\u1e6fr"]], ["\ud80c\udebd", ["\u1e0fd"]],
+ ["\ud80c\udec9", ["\u1e2bm"]], ["\ud80c\udedc", ["m\u1e0f\u1e25"]],
+ ["\ud80c\udedd", ["ws\u1e2b"]], ["\ud80c\udeeb", ["s\u1e6f", "s\ua722\u1e6f"]],
+ ["\ud80c\udeec", ["dm\u1e0f"]], ["\ud80c\udeed", ["\u1e6f\ua722z"]],
+ ["\ud80c\udef7", ["sj\ua722"]], ["\ud80c\udef9", ["\ua725n\u1e2b"]],
+ ["\ud80c\udefe", ["\u1e25q\ua722"]], ["\ud80c\udeff", ["\ua725wt"]],
+ ["\ud80c\udf00", ["w\ua722s"]], ["\ud80c\udf01", ["\u1e0f\ua722m"]],
+ ["\ud80c\udf02", ["s\u1e2bm", "\ua725b\ua722"]], ["\ud80c\udf03", ["md"]],
+ ["\ud80c\udf07", ["mn"]], ["\ud80c\udf09", ["\u1e25\u1e0f"]],
+ ["\ud80c\udf0b", ["\u1e25\u1e0f"]], ["\ud80c\udf10", ["tp"]],
+ ["\ud80c\udf12", ["p\u1e0f"]], ["\ud80c\udf15", ["zwn"]],
+ ["\ud80c\udf17", ["rw\u1e0f", "rwd"]], ["\ud80c\udf18", ["rs"]],
+ ["\ud80c\udf1e", ["\u0161ms"]], ["\ud80c\udf1f", ["qs"]], ["\ud80c\udf21", ["w\ua722"]],
+ ["\ud80c\udf22", ["sn"]], ["\ud80c\udf24", ["\ua725\u1e25", "j\u1e25"]],
+ ["\ud80c\udf25", ["\u1e0fb\ua722"]], ["\ud80c\udf28", ["\u1e96r"]],
+ ["\ud80c\udf2b", ["s\u0161m"]], ["\ud80c\udf2c", ["s\u0161m"]], ["\ud80c\udf30", ["nm"]],
+ ["\ud80c\udf31", ["nm"]], ["\ud80c\udf33", ["m\ua722"]], ["\ud80c\udf38", ["mr"]],
+ ["\ud80c\udf3c", ["\u1e25n"]], ["\ud80c\udf41", ["\u0161n\ua725", "hb"]],
+ ["\ud80c\udf43", ["tm"]], ["\ud80c\udf45", ["grg"]], ["\ud80c\udf47", ["nw"]],
+ ["\ud80c\udf49", ["stp"]], ["\ud80c\udf4b", ["\ua722b", "mr"]],
+ ["\ud80c\udf52", ["\u1e0f\ua722"]], ["\ud80c\udf54", ["t\ua722"]],
+ ["\ud80c\udf58", ["tj"]], ["\ud80c\udf59", ["\u1e2bsf"]], ["\ud80c\udf5b", ["\u1e25m"]],
+ ["\ud80c\udf62", ["\u0161n"]], ["\ud80c\udf6f", ["w\ua722"]],
+ ["\ud80c\udf71", ["\u0161s", "\u0161sr"]], ["\ud80c\udf72", ["\u0161n"]],
+ ["\ud80c\udf81", ["j\u1e6f"]], ["\ud80c\udf82", ["z\ua722"]], ["\ud80c\udf83", ["z\ua722"]],
+ ["\ud80c\udf94", ["m\u1e25"]], ["\ud80c\udf95", ["m\u1e25"]],
+ ["\ud80c\udf97", ["w\u1e0f", "wd"]], ["\ud80c\udf98", ["w\u1e0f", "wd"]],
+ ["\ud80c\udf99", ["\ua725\u1e0f"]], ["\ud80c\udf9a", ["\ua725\u1e0f"]],
+ ["\ud80c\udf9b", ["\u1e25"]], ["\ud80c\udf9d", ["sk", "w\ua722\u1e25"]],
+ ["\ud80c\udf9f", ["nb"]], ["\ud80c\udfa3", ["msn"]], ["\ud80c\udfa8", ["\u1e25n"]],
+ ["\ud80c\udfb0", ["b\ua722s"]], ["\ud80c\udfb8", ["\u1e96nm"]],
+ ["\ud80c\udfba", ["\u1e25nw"]], ["\ud80c\udfbf", ["\u1e25z", "\u1e25s"]],
+ ["\ud80c\udfc5", ["\u1e2bnt"]], ["\ud80c\udfc7", ["mj"]], ["\ud80c\udfcc", ["nw", "jn"]],
+ ["\ud80c\udfce", ["jn"]], ["\ud80c\udfd9", ["dj", "\u1e0fj"]], ["\ud80c\udfe0", ["mn"]],
+ ["\ud80c\udff4", ["s\u1e0f", "zw\ua722", "sw\ua722"]], ["\ud80c\udff6", ["jm"]],
+ ["\ud80d\udc0e", ["w\u1e25\ua722"]], ["\ud80d\udc11", ["\u1e25p"]],
+ ["\ud80d\udc16", ["qn"]], ["\ud80d\udc19", ["m\ua722\ua725"]],
+ ["\ud80d\udc1b", ["jm", "m"]], ["\ud80d\udc1d", ["gs"]],
+ ["\ud80d\udc1e", ["gs"]], ["\ud80d\udc1f", ["s\ua722"]],
+ ["\ud80d\udc20", ["s\ua722"]], ["\ud80d\udc22", ["\ua725pr"]],
+ ["\ud80d\udc29", ["n\u1e0f"]], ["\ud80d\udc2a", ["qd"]]
+]);
+
+const state = {
+    count: 1, total: pairs.length, answer: [], correct: 0, next: false
+};
+
+function shuffle(ar) {
+  let currentIndex = ar.length,  randomIndex;
+  while (currentIndex != 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [ar[currentIndex], ar[randomIndex]] = [
+      ar[randomIndex], ar[currentIndex]];
+  }
+
+  return ar;
+}
+
+function question_display() {
+    const pair = pairs[state.count];
+    const question = document.getElementById("question");
+    question.removeChild(question.firstChild);
+    question.appendChild(document.createTextNode(pair[0]));
+}
+
+function rate_display(rate) {
+    const pair = pairs[state.count];
+    const count = document.getElementById("count");
+    count.removeChild(count.firstChild);
+    count.appendChild(document.createTextNode(
+        state.count + " (" + state.correct + " : " + rate + "%) / " +
+        state.total + " [" + pair[1].length + "]"
+    ));
+}
+
+function solution_display(s) {
+    const solution = document.getElementById("solution");
+    solution.removeChild(solution.firstChild);
+    solution.appendChild(document.createTextNode(s));
+}
+
+function answer_dispay() {
+    const answer = document.getElementById("answer");
+    if (answer.childNodes.length) {
+        answer.removeChild(answer.firstChild);
+    }
+    answer.appendChild(document.createTextNode(state.answer));
+}
+
+document.getElementById("next").addEventListener("click", function(e) {
+    if (state.next) {
+        const rate = ((state.correct / state.count) * 100).toFixed()
+        state.count = state.count + 1;
+        state.answer = "";
+        rate_display(rate);
+        question_display();
+        answer_dispay();
+        solution_display("💬");
+        state.next = false;
+    }
+});
+
+document.getElementById("back").addEventListener("click", function(e) {
+    if (state.answer.length > 0) {
+        state.answer = state.answer.substr(0, state.answer.length - 1);
+        answer_dispay();
+    }
+});
+
+document.getElementById("space").addEventListener("click", function(e) {
+    state.answer = state.answer + ",";
+    answer_dispay();
+});
+
+document.getElementById("keys").addEventListener("click", function(e) {
+    if (e.target.nodeName === "SPAN") {
+        state.answer = state.answer + e.target.firstChild.nodeValue;
+        answer_dispay();
+    }
+});
+
+document.getElementById("check").addEventListener("click", function(e) {
+    if (!state.next) {
+        let correct = true;
+        const entry = pairs[state.count][1];
+        const answer =
+            document.getElementById("answer").firstChild.nodeValue.split(",");
+        for (let i = 0; i < entry.length; ++i) {
+            if (!answer.includes(entry[i])) {
+                solution_display(entry.join());
+                state.correct = state.correct - 1;
+                correct = false;
+                break;
+            }
+        }
+        state.correct = state.correct + 1;
+        rate_display(((state.correct / state.count) * 100).toFixed());
+        if (correct) { state.answer = "👍"; answer_dispay(); solution_display(answer);}
+        state.next = true;
+    }
+});
+
+rate_display(0);
+question_display();
+solution_display("💬");
+</script>
+</html>
